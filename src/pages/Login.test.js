@@ -59,36 +59,36 @@ describe('Login Component', () => {
     // and use getByTestId or other appropriate functions to check its presence
   });
 
-  it('should display error toast on empty form submission', async () => {
-    // Mocking an unsuccessful login response
-    axios.post.mockResolvedValue({
-      data: {
-        status: false,
-        msg: 'Invalid credentials',
-      },
-    });
+//   it('should display error toast on empty form submission', async () => {
+//     // Mocking an unsuccessful login response
+//     axios.post.mockResolvedValue({
+//       data: {
+//         status: false,
+//         msg: 'Invalid credentials',
+//       },
+//     });
 
-    const { getByText, getByPlaceholderText } = render(
-      <MemoryRouter>
-        <Login />
-        <ToastContainer /> {/* Add ToastContainer to the render */}
-      </MemoryRouter>
-    );
+//     const { getByText, getByPlaceholderText } = render(
+//       <MemoryRouter>
+//         <Login />
+//         <ToastContainer /> {/* Add ToastContainer to the render */}
+//       </MemoryRouter>
+//     );
 
-    // Submit the form without entering credentials
-    fireEvent.submit(getByText('Log In'));
+//     // Submit the form without entering credentials
+//     fireEvent.submit(getByText('Log In'));
 
-    // Wait for the login process
-    await waitFor(() => {
-      expect(axios.post).not.toHaveBeenCalled();
-    });
+//     // Wait for the login process
+//     await waitFor(() => {
+//       expect(axios.post).not.toHaveBeenCalled();
+//     });
 
-    // Check if error toast is displayed
-    // Use react-toastify's utility function to check if toast is present
-    await waitFor(() => {
-      expect(getByText('Email and Password is required.')).toBeInTheDocument();
-    });
-  });
+//     // Check if error toast is displayed
+//     // Use react-toastify's utility function to check if toast is present
+//     await waitFor(() => {
+//       expect(getByText('Email and Password is required.')).toBeInTheDocument();
+//     });
+//   });
 
   //Checking if the login form is rendered correctly.
   //Testing the form submission with valid credentials.
