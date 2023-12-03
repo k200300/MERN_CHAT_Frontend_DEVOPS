@@ -1,6 +1,9 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import { MemoryRouter } from 'react-router-dom';
 import axios from 'axios';
+import { ToastContainer } from 'react-toastify';
 import Login from './Login';
 
 // Mocking Axios
@@ -8,7 +11,11 @@ jest.mock('axios');
 
 describe('Login Component', () => {
   it('should render the login form', () => {
-    const { getByText, getByPlaceholderText } = render(<Login />);
+    const { getByText, getByPlaceholderText } = render(
+        <MemoryRouter>
+          <Login />
+        </MemoryRouter>
+      );
     
     // Check if the form elements are rendered
     expect(getByPlaceholderText('Username')).toBeInTheDocument();
@@ -26,7 +33,11 @@ describe('Login Component', () => {
       },
     });
 
-    const { getByPlaceholderText, getByText } = render(<Login />);
+    const { getByText, getByPlaceholderText } = render(
+        <MemoryRouter>
+          <Login />
+        </MemoryRouter>
+      );
 
     // Enter valid credentials
     fireEvent.change(getByPlaceholderText('Username'), { target: { value: 'testUser' } });
@@ -48,7 +59,7 @@ describe('Login Component', () => {
     // and use getByTestId or other appropriate functions to check its presence
   });
 
-  it('should display error toast on invalid form submission', async () => {
+  it('should display error toast on empty form submission', async () => {
     // Mocking an unsuccessful login response
     axios.post.mockResolvedValue({
       data: {
@@ -57,7 +68,12 @@ describe('Login Component', () => {
       },
     });
 
-    const { getByPlaceholderText, getByText } = render(<Login />);
+    const { getByText, getByPlaceholderText } = render(
+      <MemoryRouter>
+        <Login />
+        <ToastContainer /> {/* Add ToastContainer to the render */}
+      </MemoryRouter>
+    );
 
     // Submit the form without entering credentials
     fireEvent.submit(getByText('Log In'));
@@ -68,7 +84,10 @@ describe('Login Component', () => {
     });
 
     // Check if error toast is displayed
-    expect(getByText('Invalid credentials')).toBeInTheDocument();
+    // Use react-toastify's utility function to check if toast is present
+    await waitFor(() => {
+      expect(getByText('Email and Password is required.')).toBeInTheDocument();
+    });
   });
 
   //Checking if the login form is rendered correctly.

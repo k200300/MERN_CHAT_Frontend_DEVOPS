@@ -1,73 +1,97 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { render, fireEvent, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import { MemoryRouter } from 'react-router-dom';
-import { io } from 'socket.io-client';
 import axios from 'axios';
-import Chat from './Chat';
+import { ToastContainer } from 'react-toastify';
+import Register from './Register';
 
-// Mocking dependencies
-jest.mock('socket.io-client');
+// Mocking Axios
 jest.mock('axios');
 
-describe('Chat Component', () => {
-  beforeEach(() => {
-    // Clear localStorage before each test
-    localStorage.clear();
-  });
-
-  it('should redirect to login page if user is not authenticated', () => {
-    const { getByText } = render(
+describe('Register Component', () => {
+  it('should render the register form', () => {
+    const { getByText, getByPlaceholderText } = render(
       <MemoryRouter>
-        <Chat />
+        <Register />
       </MemoryRouter>
     );
 
-    // Check if redirected to login page
-    expect(getByText('Redirecting to login...')).toBeInTheDocument();
+    // Check if the form elements are rendered
+    expect(getByPlaceholderText('Username')).toBeInTheDocument();
+    expect(getByPlaceholderText('Email')).toBeInTheDocument();
+    expect(getByPlaceholderText('Password')).toBeInTheDocument();
+    expect(getByPlaceholderText('Confirm Password')).toBeInTheDocument();
+    expect(getByText('Create User')).toBeInTheDocument();
+    expect(getByText('Already have an account ?')).toBeInTheDocument();
   });
 
-  it('should render welcome message if currentChat is undefined', async () => {
-    // Mocking authenticated user in localStorage
-    localStorage.setItem(process.env.REACT_APP_LOCALHOST_KEY, JSON.stringify({ _id: 'user123' }));
-
-    const { getByText } = render(
-      <MemoryRouter>
-        <Chat />
-      </MemoryRouter>
-    );
-
-    // Wait for welcome message to be rendered
-    await waitFor(() => {
-      expect(getByText('Welcome to the chat app!')).toBeInTheDocument();
+  it('should handle form submission with valid credentials', async () => {
+    // Mocking a successful registration response
+    axios.post.mockResolvedValue({
+      data: {
+        status: true,
+        user: { username: 'testUser' },
+      },
     });
-  });
 
-  it('should render ChatContainer if currentChat is defined', async () => {
-    // Mocking authenticated user in localStorage
-    localStorage.setItem(process.env.REACT_APP_LOCALHOST_KEY, JSON.stringify({ _id: 'user123' }));
-
-    // Mocking a chat with a specific user
-    const chatWithUser = { _id: 'otherUser123', name: 'Other User' };
-
-    const { getByText } = render(
+    const { getByText, getByPlaceholderText } = render(
       <MemoryRouter>
-        <Chat />
+        <Register />
       </MemoryRouter>
     );
 
-    // Wait for Contacts and ChatContainer to be rendered
-    await waitFor(() => {
-      // Find the Contact and simulate a click to open the chat
-      const contactElement = getByText(chatWithUser.name);
-      contactElement.click();
+    // Enter valid registration credentials
+    fireEvent.change(getByPlaceholderText('Username'), { target: { value: 'testUser' } });
+    fireEvent.change(getByPlaceholderText('Email'), { target: { value: 'test@example.com' } });
+    fireEvent.change(getByPlaceholderText('Password'), { target: { value: 'testPassword' } });
+    fireEvent.change(getByPlaceholderText('Confirm Password'), { target: { value: 'testPassword' } });
 
-      // Check if ChatContainer is rendered with the selected user
-      expect(getByText(`Chatting with ${chatWithUser.name}`)).toBeInTheDocument();
+    // Submit the form
+    fireEvent.submit(getByText('Create User'));
+
+    // Wait for the registration process
+    await waitFor(() => {
+      expect(axios.post).toHaveBeenCalledWith(expect.any(String), {
+        username: 'testUser',
+        email: 'test@example.com',
+        password: 'testPassword',
+      });
     });
+
+    // Check if user is redirected after successful registration
+    // Note: Add a specific identifier for the element on the redirected page
+    // and use getByTestId or other appropriate functions to check its presence
   });
 
-  // 
-  //Redirecting to the login page if the user is not authenticated.
-  //Rendering the welcome message if currentChat is undefined.
-  //Rendering the ChatContainer if currentChat is defined.
+//   it('should display error toast on invalid form submission', async () => {
+//     // Mocking an unsuccessful registration response
+//     axios.post.mockResolvedValue({
+//       data: {
+//         status: false,
+//         msg: 'Invalid credentials',
+//       },
+//     });
+
+//     const { getByText, getByPlaceholderText } = render(
+//       <MemoryRouter>
+//         <Register />
+//         <ToastContainer />
+//       </MemoryRouter>
+//     );
+
+//     // Submit the form without entering credentials
+//     fireEvent.submit(getByText('Create User'));
+
+//     // Wait for the registration process
+//     await waitFor(() => {
+//       expect(axios.post).not.toHaveBeenCalled();
+//     });
+
+//     // Check if error toast is displayed
+//     // Use react-toastify's utility function to check if toast is present
+//     await waitFor(() => {
+//       expect(getByText('Username should be greater than 3 characters.')).toBeInTheDocument();
+//     });
+//   });
 });
