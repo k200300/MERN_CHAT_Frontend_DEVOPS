@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react';
+import { render, fireEvent, waitFor, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { MemoryRouter } from 'react-router-dom';
 import axios from 'axios';
@@ -59,36 +59,37 @@ describe('Login Component', () => {
     // and use getByTestId or other appropriate functions to check its presence
   });
 
-//   it('should display error toast on empty form submission', async () => {
-//     // Mocking an unsuccessful login response
-//     axios.post.mockResolvedValue({
-//       data: {
-//         status: false,
-//         msg: 'Invalid credentials',
-//       },
-//     });
-
-//     const { getByText, getByPlaceholderText } = render(
-//       <MemoryRouter>
-//         <Login />
-//         <ToastContainer /> {/* Add ToastContainer to the render */}
-//       </MemoryRouter>
-//     );
-
-//     // Submit the form without entering credentials
-//     fireEvent.submit(getByText('Log In'));
-
-//     // Wait for the login process
-//     await waitFor(() => {
-//       expect(axios.post).not.toHaveBeenCalled();
-//     });
-
-//     // Check if error toast is displayed
-//     // Use react-toastify's utility function to check if toast is present
-//     await waitFor(() => {
-//       expect(getByText('Email and Password is required.')).toBeInTheDocument();
-//     });
-//   });
+  it('should display error toast on empty form submission', async () => {
+    // Mocking an unsuccessful login response
+    axios.post.mockResolvedValue({
+      data: {
+        status: false,
+        msg: 'Invalid credentials',
+      },
+    });
+  
+    const { queryAllByText, getByText, getByPlaceholderText } = render(
+      <MemoryRouter>
+        <Login />
+        <ToastContainer /> {/* Add ToastContainer to the render */}
+      </MemoryRouter>
+    );
+  
+    // Submit the form without entering credentials
+    fireEvent.submit(getByText('Log In'));
+  
+    // Wait for the login process
+    await waitFor(() => {
+      expect(axios.post).not.toHaveBeenCalled();
+    });
+  
+    // Check if error toast is displayed
+    // Use react-toastify's utility function to check if at least one toast is present
+    await waitFor(() => {
+      const errorToasts = queryAllByText('Email and Password is required.');
+      expect(errorToasts.length).toBeGreaterThan(0);
+    });
+  });
 
   //Checking if the login form is rendered correctly.
   //Testing the form submission with valid credentials.
