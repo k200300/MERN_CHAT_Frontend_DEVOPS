@@ -22,6 +22,7 @@
     "yocto-queue": "^1.0.0"
   },
   "scripts": {
+    "preinstall": "rm -rf node_modules",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
