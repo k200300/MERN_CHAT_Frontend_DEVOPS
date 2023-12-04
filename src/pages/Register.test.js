@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react';
+import { render, fireEvent, waitFor, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { MemoryRouter } from 'react-router-dom';
 import axios from 'axios';
@@ -64,34 +64,36 @@ describe('Register Component', () => {
     // and use getByTestId or other appropriate functions to check its presence
   });
 
-//   it('should display error toast on invalid form submission', async () => {
-//     // Mocking an unsuccessful registration response
-//     axios.post.mockResolvedValue({
-//       data: {
-//         status: false,
-//         msg: 'Invalid credentials',
-//       },
-//     });
+  it('should display error toast on invalid form submission', async () => {
+    // Mocking an unsuccessful login response
+    axios.post.mockResolvedValue({
+      data: {
+        status: false,
+        msg: 'Invalid credentials',
+      },
+    });
+  
+    const { queryAllByText, getByText, getByPlaceholderText } = render(
+      <MemoryRouter>
+        <Register />
+        <ToastContainer /> {/* Add ToastContainer to the render */}
+      </MemoryRouter>
+    );
+  
+    // Submit the form without entering credentials
+    fireEvent.submit(getByText('Create User'));
+  
+    // Wait for the login process
+    await waitFor(() => {
+      expect(axios.post).not.toHaveBeenCalled();
+    });
+  
+    // Check if error toast is displayed
+    // Use react-toastify's utility function to check if at least one toast is present
+    await waitFor(() => {
+      const errorToasts = queryAllByText('Username should be greater than 3 characters.');
+      expect(errorToasts.length).toBeGreaterThan(0);
+    });
+  });
 
-//     const { getByText, getByPlaceholderText } = render(
-//       <MemoryRouter>
-//         <Register />
-//         <ToastContainer />
-//       </MemoryRouter>
-//     );
-
-//     // Submit the form without entering credentials
-//     fireEvent.submit(getByText('Create User'));
-
-//     // Wait for the registration process
-//     await waitFor(() => {
-//       expect(axios.post).not.toHaveBeenCalled();
-//     });
-
-//     // Check if error toast is displayed
-//     // Use react-toastify's utility function to check if toast is present
-//     await waitFor(() => {
-//       expect(getByText('Username should be greater than 3 characters.')).toBeInTheDocument();
-//     });
-//   });
 });
