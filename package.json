@@ -1,6 +1,6 @@
 {
   "name": "chat-app",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": false,
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.2",
@@ -21,7 +21,6 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "preinstall": "rm -rf node_modules",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
