@@ -9095,6 +9095,11 @@ yargs@^16.2.0:
     y18n "^5.0.5"
     yargs-parser "^20.2.2"
 
+yocto-queue@^0.0.0:
+  version "0.0.0"
+  resolved "https://pkgs.dev.azure.com/20K-0300/_packaging/20K-0300/npm/registry/yocto-queue/-/yocto-queue-0.0.0.tgz"
+  integrity sha1-l9D86AfZ5QhzrscQdOiVeI4yfPM=
+
 yocto-queue@^0.1.0:
   version "0.1.0"
   resolved "https://pkgs.dev.azure.com/20K-0300/_packaging/20K-0300/npm/registry/yocto-queue/-/yocto-queue-0.1.0.tgz"
